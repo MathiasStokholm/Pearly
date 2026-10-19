@@ -57,7 +57,7 @@ function renderPattern() {
   if (!wasmReady || !image) return;
   const columns = Math.max(8, Math.min(100, Number.parseInt(columnsInput.value, 10) || 30));
   columnsInput.value = columns;
-  const rows = Math.max(1, Math.round(columns * image.naturalHeight / image.naturalWidth));
+  const rows = Math.max(1, Math.min(200, Math.round(columns * image.naturalHeight / image.naturalWidth)));
   const scale = Math.min(1, 1600 / Math.max(image.naturalWidth, image.naturalHeight));
   const sourceWidth = Math.max(1, Math.round(image.naturalWidth * scale));
   const sourceHeight = Math.max(1, Math.round(image.naturalHeight * scale));

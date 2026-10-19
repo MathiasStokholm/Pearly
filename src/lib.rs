@@ -35,19 +35,35 @@ pub fn bead_pattern(
     columns: u32,
     rows: u32,
 ) -> Result<Vec<u8>, JsValue> {
+    bead_pattern_pixels(pixels, source_width, source_height, columns, rows)
+        .map_err(JsValue::from_str)
+}
+
+fn bead_pattern_pixels(
+    pixels: &[u8],
+    source_width: u32,
+    source_height: u32,
+    columns: u32,
+    rows: u32,
+) -> Result<Vec<u8>, &'static str> {
     if source_width == 0
         || source_height == 0
+        || source_width > 1600
+        || source_height > 1600
         || columns == 0
         || rows == 0
         || columns > 200
         || rows > 200
     {
-        return Err(JsValue::from_str("Image and pattern dimensions must be between 1 and 200."));
+        return Err("Image dimensions must be between 1 and 1600 and pattern dimensions between 1 and 200.");
     }
 
-    let expected = source_width as usize * source_height as usize * 4;
+    let expected = (source_width as usize)
+        .checked_mul(source_height as usize)
+        .and_then(|pixels| pixels.checked_mul(4))
+        .ok_or("Image dimensions are too large.")?;
     if pixels.len() != expected {
-        return Err(JsValue::from_str("Pixel data does not match the source dimensions."));
+        return Err("Pixel data does not match the source dimensions.");
     }
 
     let mut pattern = Vec::with_capacity(columns as usize * rows as usize * 4);
@@ -116,14 +132,22 @@ mod tests {
 
     #[test]
     fn maps_sampled_pixels_to_opaque_palette_colors() {
-        let result = bead_pattern(&[250, 10, 10, 255], 1, 1, 1, 1).unwrap();
+        let result = bead_pattern_pixels(&[250, 10, 10, 255], 1, 1, 1, 1).unwrap();
         assert_eq!(result, [230, 45, 45, 255]);
     }
 
     #[test]
     fn rejects_invalid_dimensions_and_pixel_buffers() {
-        assert!(bead_pattern(&[], 1, 1, 0, 1).is_err());
-        assert!(bead_pattern(&[], 1, 1, 1, 1).is_err());
-        assert!(bead_pattern(&[], 1, 1, 201, 1).is_err());
+        assert!(bead_pattern_pixels(&[], 1, 1, 0, 1).is_err());
+        assert!(bead_pattern_pixels(&[], 1, 1, 1, 1).is_err());
+        assert!(bead_pattern_pixels(&[], 1, 1, 201, 1).is_err());
+        assert!(bead_pattern_pixels(&[], u32::MAX, u32::MAX, 1, 1).is_err());
+    }
+
+    #[test]
+    fn averages_source_pixels_before_selecting_a_bead_color() {
+        let source = [255, 255, 255, 255, 25, 25, 25, 255];
+        let result = bead_pattern_pixels(&source, 2, 1, 1, 1).unwrap();
+        assert_eq!(result, [120, 120, 120, 255]);
     }
 }
