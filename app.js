@@ -2,6 +2,7 @@ import init, { bead_pattern } from "./pkg/pearly.js";
 
 const upload = document.querySelector("#image-input");
 const original = document.querySelector("#original");
+const originalContext = original.getContext("2d");
 const emptyOriginal = document.querySelector("#empty-original");
 const emptyPattern = document.querySelector("#empty-pattern");
 const canvas = document.querySelector("#pattern");
@@ -29,20 +30,26 @@ upload.addEventListener("change", () => {
   }
 
   if (objectUrl) URL.revokeObjectURL(objectUrl);
-  objectUrl = URL.createObjectURL(file);
+  const nextObjectUrl = URL.createObjectURL(file);
+  objectUrl = nextObjectUrl;
   const nextImage = new Image();
   nextImage.onload = () => {
+    if (objectUrl !== nextObjectUrl) return;
     image = nextImage;
-    original.src = objectUrl;
+    const scale = Math.min(1, 600 / Math.max(nextImage.naturalWidth, nextImage.naturalHeight));
+    original.width = Math.max(1, Math.round(nextImage.naturalWidth * scale));
+    original.height = Math.max(1, Math.round(nextImage.naturalHeight * scale));
+    originalContext.drawImage(nextImage, 0, 0, original.width, original.height);
     original.hidden = false;
     emptyOriginal.hidden = true;
     fileName.textContent = file.name;
     renderPattern();
   };
   nextImage.onerror = () => {
+    if (objectUrl !== nextObjectUrl) return;
     fileName.textContent = "Could not read that picture. Try another one.";
   };
-  nextImage.src = objectUrl;
+  nextImage.src = nextObjectUrl;
 });
 
 columnsInput.addEventListener("input", renderPattern);
