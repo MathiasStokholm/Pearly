@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#fffaf5">
+    <meta name="description" content="Turn a picture into a colorful Hama Midi bead pattern.">
+    <title>Pearly — Bead pattern maker</title>
+    <link rel="stylesheet" href="style.css">
+  </head>
+  <body>
+    <main class="app">
+      <header class="page-header">
+        <a class="wordmark" href="./" aria-label="Pearly home"><span aria-hidden="true">✳</span> pearly</a>
+        <p>Make something lovely, one bead at a time.</p>
+      </header>
+
+      <section class="intro">
+        <p class="eyebrow">YOUR NEXT LITTLE PROJECT</p>
+        <h1>Picture it in beads.</h1>
+        <p>Choose a picture and we’ll turn it into a Hama Midi pattern.</p>
+      </section>
+
+      <section class="workspace" aria-label="Bead pattern maker">
+        <aside class="controls">
+          <label class="upload" for="image-input">
+            <span class="upload-icon" aria-hidden="true">↑</span>
+            <span class="upload-title">Choose a picture</span>
+            <span class="upload-hint">JPG, PNG, GIF or WebP</span>
+            <input id="image-input" type="file" accept="image/*">
+          </label>
+          <p id="file-name" class="file-name" aria-live="polite">No picture selected yet</p>
+
+          <div class="setting">
+            <label for="columns">Beads across</label>
+            <div class="number-setting">
+              <input id="columns" type="number" min="8" max="100" value="30">
+              <span>beads</span>
+            </div>
+          </div>
+          <p class="setting-note">Height adjusts to match your picture.</p>
+
+          <button id="download" class="download" type="button" disabled>Download pattern <span aria-hidden="true">↓</span></button>
+          <p class="privacy-note"><span aria-hidden="true">♡</span> Your picture stays on your device.</p>
+        </aside>
+
+        <div class="results">
+          <section class="preview-card">
+            <div class="card-heading">
+              <div><p class="card-label">YOUR PICTURE</p><h2>Original</h2></div>
+            </div>
+            <div class="picture-stage">
+              <div id="empty-original" class="empty-state"><span aria-hidden="true">✿</span><p>Your picture will appear here</p></div>
+              <img id="original" alt="Uploaded picture preview" hidden>
+            </div>
+          </section>
+
+          <section class="preview-card pattern-card">
+            <div class="card-heading">
+              <div><p class="card-label">READY TO MAKE</p><h2>Your pattern</h2></div>
+              <p id="pattern-size" class="size-label"></p>
+            </div>
+            <div id="pattern-stage" class="pattern-stage">
+              <div id="empty-pattern" class="empty-state"><span aria-hidden="true">✳</span><p>Your bead pattern will appear here</p></div>
+              <canvas id="pattern" aria-label="Generated Hama Midi bead pattern" hidden></canvas>
+            </div>
+            <div class="pattern-footer"><span id="bead-count">0 beads</span><span id="color-count">0 colors</span></div>
+          </section>
+        </div>
+      </section>
+
+      <footer>Made for happy little projects <span aria-hidden="true">♡</span></footer>
+    </main>
+    <script type="module" src="app.js"></script>
+  </body>
+</html>
