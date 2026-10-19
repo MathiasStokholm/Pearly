@@ -55,7 +55,9 @@ fn bead_pattern_pixels(
         || columns > 200
         || rows > 200
     {
-        return Err("Image dimensions must be between 1 and 1600 and pattern dimensions between 1 and 200.");
+        return Err(
+            "Image dimensions must be between 1 and 1600 and pattern dimensions between 1 and 200.",
+        );
     }
 
     let expected = (source_width as usize)
@@ -69,8 +71,15 @@ fn bead_pattern_pixels(
     let mut pattern = Vec::with_capacity(columns as usize * rows as usize * 4);
     for row in 0..rows {
         for column in 0..columns {
-            let (red, green, blue) =
-                average_region(pixels, source_width, source_height, column, row, columns, rows);
+            let (red, green, blue) = average_region(
+                pixels,
+                source_width,
+                source_height,
+                column,
+                row,
+                columns,
+                rows,
+            );
             let color = nearest_color([red, green, blue]);
             pattern.extend_from_slice(&[color[0], color[1], color[2], 255]);
         }
