@@ -1,0 +1,49 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: wasm32-unknown-unknown
+      - uses: actions/configure-pages@v5
+      - name: Install wasm-bindgen-cli
+        run: |
+          VERSION=$(awk '/^name = "wasm-bindgen"$/ { getline; print $3; exit }' Cargo.lock | tr -d '"')
+          cargo install wasm-bindgen-cli --version "$VERSION" --locked
+      - name: Build WebAssembly
+        run: cargo build --profile wasm-release --target wasm32-unknown-unknown
+      - name: Prepare Pages artifact
+        run: |
+          mkdir -p dist/pkg
+          cp index.html app.js style.css dist/
+          wasm-bindgen --target web --out-dir dist/pkg target/wasm32-unknown-unknown/wasm-release/pearly.wasm
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
