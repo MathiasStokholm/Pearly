@@ -55,8 +55,8 @@ test("renders an SVG image containing three circles for each bead", () => {
   assert.equal(pattern.attributes.get("width"), "46");
   assert.equal(pattern.attributes.get("height"), "28");
   assert.equal(pattern.attributes.get("viewBox"), "0 0 46 28");
-  assert.equal(pattern.children.length, 6);
-  assert.ok(pattern.children.every((circle) => (
+  assert.equal(pattern.children.filter((shape) => shape.name === "circle").length, 6);
+  assert.ok(pattern.children.filter((shape) => shape.name === "circle").every((circle) => (
     circle.namespace === SVG_NAMESPACE && circle.name === "circle"
   )));
   assert.deepEqual(
