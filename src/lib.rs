@@ -162,8 +162,7 @@ mod tests {
 
     #[test]
     fn maps_sampled_pixels_to_opaque_palette_colors() {
-        let result =
-            bead_pattern_pixels(&[250, 10, 10, 255], 1, 1, 1, 1, &[230, 45, 45]).unwrap();
+        let result = bead_pattern_pixels(&[250, 10, 10, 255], 1, 1, 1, 1, &[230, 45, 45]).unwrap();
         assert_eq!(result, [230, 45, 45, 255]);
     }
 
