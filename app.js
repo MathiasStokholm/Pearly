@@ -70,7 +70,7 @@ downloadButton.addEventListener("click", () => {
   link.download = "pearly-bead-pattern.svg";
   link.href = objectUrl;
   link.click();
-  URL.revokeObjectURL(objectUrl);
+  setTimeout(() => URL.revokeObjectURL(objectUrl), 1000);
 });
 
 colorPickerButton.addEventListener("click", () => {
