@@ -130,7 +130,7 @@ function renderPattern() {
   pattern.setAttribute("width", width);
   pattern.setAttribute("height", height);
   pattern.setAttribute("viewBox", `0 0 ${width} ${height}`);
-  const shapes = [];
+  const shapes = document.createDocumentFragment();
 
   for (let row = 0; row < rows; row++) {
     for (let column = 0; column < columns; column++) {
@@ -138,12 +138,12 @@ function renderPattern() {
       const x = padding + column * beadSize;
       const y = padding + row * beadSize;
       const fill = colorToHex(output[pixel], output[pixel + 1], output[pixel + 2]);
-      shapes.push(`<circle cx="${x + beadSize / 2}" cy="${y + beadSize / 2}" r="${beadSize * 0.44}" fill="${fill}"/>`);
-      shapes.push(`<circle cx="${x + beadSize / 2}" cy="${y + beadSize / 2}" r="${beadSize * 0.13}" fill="#41352d" fill-opacity=".3"/>`);
-      shapes.push(`<circle cx="${x + beadSize * 0.43}" cy="${y + beadSize * 0.41}" r="${beadSize * 0.055}" fill="#fff" fill-opacity=".7"/>`);
+      appendCircle(shapes, x + beadSize / 2, y + beadSize / 2, beadSize * 0.44, fill);
+      appendCircle(shapes, x + beadSize / 2, y + beadSize / 2, beadSize * 0.13, "#41352d", ".3");
+      appendCircle(shapes, x + beadSize * 0.43, y + beadSize * 0.41, beadSize * 0.055, "#fff", ".7");
     }
   }
-  pattern.innerHTML = shapes.join("");
+  pattern.replaceChildren(shapes);
 
   const colors = new Set();
   for (let index = 0; index < output.length; index += 4) {
@@ -195,4 +195,14 @@ function closeColorMenu() {
 
 function colorToHex(red, green, blue) {
   return `#${[red, green, blue].map((value) => value.toString(16).padStart(2, "0")).join("")}`;
+}
+
+function appendCircle(parent, cx, cy, radius, fill, fillOpacity) {
+  const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+  circle.setAttribute("cx", cx);
+  circle.setAttribute("cy", cy);
+  circle.setAttribute("r", radius);
+  circle.setAttribute("fill", fill);
+  if (fillOpacity) circle.setAttribute("fill-opacity", fillOpacity);
+  parent.append(circle);
 }
