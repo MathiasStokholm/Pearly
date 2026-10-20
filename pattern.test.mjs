@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { renderBeadSvg } from "./pattern.mjs";
+import { renderBeadSvg, setPatternVisibility } from "./pattern.mjs";
 
 const SVG_NAMESPACE = "http://www.w3.org/2000/svg";
 
@@ -16,6 +16,11 @@ class SvgNode {
     this.attributes.set(name, String(value));
   }
 
+  toggleAttribute(name, force) {
+    if (force) this.attributes.set(name, "");
+    else this.attributes.delete(name);
+  }
+
   append(child) {
     this.children.push(child);
   }
@@ -29,6 +34,17 @@ const document = {
   createDocumentFragment: () => new SvgNode(null, "#document-fragment"),
   createElementNS: (namespace, name) => new SvgNode(namespace, name),
 };
+
+test("toggles the hidden attribute on the SVG pattern", () => {
+  const pattern = new SvgNode(SVG_NAMESPACE, "svg");
+  pattern.setAttribute("hidden", "");
+
+  setPatternVisibility(pattern, true);
+  assert.equal(pattern.attributes.has("hidden"), false);
+
+  setPatternVisibility(pattern, false);
+  assert.equal(pattern.attributes.has("hidden"), true);
+});
 
 test("renders an SVG image containing three circles for each bead", () => {
   const pattern = new SvgNode(SVG_NAMESPACE, "svg");

@@ -1,5 +1,9 @@
 const SVG_NAMESPACE = "http://www.w3.org/2000/svg";
 
+export function setPatternVisibility(pattern, visible) {
+  pattern.toggleAttribute("hidden", !visible);
+}
+
 export function renderBeadSvg(pattern, output, columns, rows, document) {
   const beadSize = 18;
   const padding = 5;

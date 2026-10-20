@@ -1,5 +1,5 @@
 import init, { bead_palette, bead_pattern } from "./pkg/pearly.js";
-import { renderBeadSvg } from "./pattern.mjs";
+import { renderBeadSvg, setPatternVisibility } from "./pattern.mjs";
 
 const upload = document.querySelector("#image-input");
 const original = document.querySelector("#original");
@@ -96,7 +96,7 @@ function renderPattern() {
   const selectedColors = Array.from(colorOptions.querySelectorAll("input:checked"))
     .map((input) => Number(input.value));
   if (selectedColors.length === 0) {
-    pattern.hidden = true;
+    setPatternVisibility(pattern, false);
     emptyPattern.hidden = false;
     emptyPattern.querySelector("p").textContent = "Select at least one color to make a pattern";
     downloadButton.disabled = true;
@@ -129,7 +129,7 @@ function renderPattern() {
   for (let index = 0; index < output.length; index += 4) {
     colors.add(`${output[index]},${output[index + 1]},${output[index + 2]}`);
   }
-  pattern.hidden = false;
+  setPatternVisibility(pattern, true);
   emptyPattern.hidden = true;
   downloadButton.disabled = false;
   patternSize.textContent = `${columns} × ${rows}`;
