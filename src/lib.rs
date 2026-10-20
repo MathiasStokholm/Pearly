@@ -34,9 +34,22 @@ pub fn bead_pattern(
     source_height: u32,
     columns: u32,
     rows: u32,
+    available_colors: &[u8],
 ) -> Result<Vec<u8>, JsValue> {
-    bead_pattern_pixels(pixels, source_width, source_height, columns, rows)
-        .map_err(JsValue::from_str)
+    bead_pattern_pixels(
+        pixels,
+        source_width,
+        source_height,
+        columns,
+        rows,
+        available_colors,
+    )
+    .map_err(JsValue::from_str)
+}
+
+#[wasm_bindgen]
+pub fn bead_palette() -> Vec<u8> {
+    PALETTE.iter().flatten().copied().collect()
 }
 
 fn bead_pattern_pixels(
@@ -45,6 +58,7 @@ fn bead_pattern_pixels(
     source_height: u32,
     columns: u32,
     rows: u32,
+    available_colors: &[u8],
 ) -> Result<Vec<u8>, &'static str> {
     if source_width == 0
         || source_height == 0
@@ -67,6 +81,13 @@ fn bead_pattern_pixels(
     if pixels.len() != expected {
         return Err("Pixel data does not match the source dimensions.");
     }
+    if available_colors.is_empty() || available_colors.len() % 3 != 0 {
+        return Err("Select at least one complete bead color.");
+    }
+    let palette: Vec<[u8; 3]> = available_colors
+        .chunks_exact(3)
+        .map(|color| [color[0], color[1], color[2]])
+        .collect();
 
     let mut pattern = Vec::with_capacity(columns as usize * rows as usize * 4);
     for row in 0..rows {
@@ -80,7 +101,7 @@ fn bead_pattern_pixels(
                 columns,
                 rows,
             );
-            let color = nearest_color([red, green, blue]);
+            let color = nearest_color([red, green, blue], &palette);
             pattern.extend_from_slice(&[color[0], color[1], color[2], 255]);
         }
     }
@@ -123,8 +144,8 @@ fn average_region(
     )
 }
 
-fn nearest_color(color: [u8; 3]) -> [u8; 3] {
-    *PALETTE
+fn nearest_color(color: [u8; 3], palette: &[[u8; 3]]) -> [u8; 3] {
+    *palette
         .iter()
         .min_by_key(|candidate| {
             let red = i32::from(color[0]) - i32::from(candidate[0]);
@@ -141,22 +162,32 @@ mod tests {
 
     #[test]
     fn maps_sampled_pixels_to_opaque_palette_colors() {
-        let result = bead_pattern_pixels(&[250, 10, 10, 255], 1, 1, 1, 1).unwrap();
+        let result = bead_pattern_pixels(&[250, 10, 10, 255], 1, 1, 1, 1, &[230, 45, 45]).unwrap();
         assert_eq!(result, [230, 45, 45, 255]);
     }
 
     #[test]
     fn rejects_invalid_dimensions_and_pixel_buffers() {
-        assert!(bead_pattern_pixels(&[], 1, 1, 0, 1).is_err());
-        assert!(bead_pattern_pixels(&[], 1, 1, 1, 1).is_err());
-        assert!(bead_pattern_pixels(&[], 1, 1, 201, 1).is_err());
-        assert!(bead_pattern_pixels(&[], u32::MAX, u32::MAX, 1, 1).is_err());
+        let palette: Vec<u8> = PALETTE.iter().flatten().copied().collect();
+        assert!(bead_pattern_pixels(&[], 1, 1, 0, 1, &palette).is_err());
+        assert!(bead_pattern_pixels(&[], 1, 1, 1, 1, &palette).is_err());
+        assert!(bead_pattern_pixels(&[], 1, 1, 201, 1, &palette).is_err());
+        assert!(bead_pattern_pixels(&[], u32::MAX, u32::MAX, 1, 1, &palette).is_err());
     }
 
     #[test]
     fn averages_source_pixels_before_selecting_a_bead_color() {
         let source = [255, 255, 255, 255, 25, 25, 25, 255];
-        let result = bead_pattern_pixels(&source, 2, 1, 1, 1).unwrap();
+        let palette: Vec<u8> = PALETTE.iter().flatten().copied().collect();
+        let result = bead_pattern_pixels(&source, 2, 1, 1, 1, &palette).unwrap();
         assert_eq!(result, [120, 120, 120, 255]);
+    }
+
+    #[test]
+    fn limits_bead_colors_to_the_selected_palette() {
+        let result = bead_pattern_pixels(&[255, 255, 255, 255], 1, 1, 1, 1, &[25, 25, 25]).unwrap();
+        assert_eq!(result, [25, 25, 25, 255]);
+        assert!(bead_pattern_pixels(&[0, 0, 0, 255], 1, 1, 1, 1, &[]).is_err());
+        assert!(bead_pattern_pixels(&[0, 0, 0, 255], 1, 1, 1, 1, &[1, 2]).is_err());
     }
 }
