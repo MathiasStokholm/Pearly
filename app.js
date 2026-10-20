@@ -130,7 +130,7 @@ function renderPattern() {
 
   const pixels = sourceContext.getImageData(0, 0, sourceSize, sourceSize).data;
   const availableColors = new Uint8Array(selectedColors.flatMap((index) => palette[index]));
-  const output = bead_pattern(pixels, sourceWidth, sourceHeight, columns, rows, availableColors);
+  const output = bead_pattern(pixels, sourceSize, sourceSize, columns, rows, availableColors);
   renderBeadSvg(pattern, output, columns, rows, document);
 
   const colors = new Set();
