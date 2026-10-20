@@ -32,7 +32,7 @@ jobs:
       - name: Prepare Pages artifact
         run: |
           mkdir -p dist/pkg
-          cp index.html app.js style.css dist/
+          cp index.html app.js pattern.mjs style.css dist/
           wasm-bindgen --target web --out-dir dist/pkg target/wasm32-unknown-unknown/wasm-release/pearly.wasm
       - uses: actions/upload-pages-artifact@v3
         with:
