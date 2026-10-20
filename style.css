@@ -77,7 +77,7 @@ body { margin: 0; min-width: 320px; }
 .empty-state > span { color: #d49a36; font-size: 31px; }
 .empty-state p { margin: 8px 0 0; font-size: 11px; }
 .pattern-stage { background-color: #eef2ed; background-image: radial-gradient(#d9e0d9 0.8px, transparent 0.8px); background-size: 14px 14px; }
-#pattern { display: block; width: min(100%, 480px); height: auto; padding: 18px; }
+#pattern { display: block; max-width: 100%; height: auto; padding: 18px; }
 .pattern-footer { display: flex; justify-content: space-between; padding: 0 17px 14px; color: #78827c; font-size: 10px; }
 footer { padding: 27px 0 25px; color: #87918b; font-size: 11px; text-align: center; }
 
