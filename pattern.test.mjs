@@ -55,13 +55,40 @@ test("renders an SVG image containing three circles for each bead", () => {
   assert.equal(pattern.attributes.get("width"), "46");
   assert.equal(pattern.attributes.get("height"), "28");
   assert.equal(pattern.attributes.get("viewBox"), "0 0 46 28");
-  assert.equal(pattern.children.length, 6);
-  assert.ok(pattern.children.every((circle) => (
+  assert.equal(pattern.children.filter((shape) => shape.name === "circle").length, 6);
+  assert.ok(pattern.children.filter((shape) => shape.name === "circle").every((circle) => (
     circle.namespace === SVG_NAMESPACE && circle.name === "circle"
   )));
   assert.deepEqual(
     pattern.children.filter((circle) => circle.attributes.get("r") === "7.92")
       .map((circle) => circle.attributes.get("fill")),
     ["#ff0000", "#00ff00"],
+  );
+});
+
+test("renders a visible square grid of 29-by-29 bead boards", () => {
+  const pattern = new SvgNode(SVG_NAMESPACE, "svg");
+  const beadsPerSide = 58;
+  const output = new Uint8Array(beadsPerSide * beadsPerSide * 4);
+
+  renderBeadSvg(pattern, output, beadsPerSide, beadsPerSide, document);
+
+  assert.equal(pattern.attributes.get("width"), "1054");
+  assert.equal(pattern.attributes.get("height"), "1054");
+  const boards = pattern.children.filter((shape) => shape.name === "rect");
+  assert.equal(boards.length, 4);
+  assert.deepEqual(
+    boards.map((board) => [
+      board.attributes.get("x"),
+      board.attributes.get("y"),
+      board.attributes.get("width"),
+      board.attributes.get("height"),
+    ]),
+    [
+      ["5", "5", "522", "522"],
+      ["527", "5", "522", "522"],
+      ["5", "527", "522", "522"],
+      ["527", "527", "522", "522"],
+    ],
   );
 });

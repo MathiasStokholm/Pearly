@@ -7,7 +7,7 @@ const originalContext = original.getContext("2d");
 const emptyOriginal = document.querySelector("#empty-original");
 const emptyPattern = document.querySelector("#empty-pattern");
 const pattern = document.querySelector("#pattern");
-const columnsInput = document.querySelector("#columns");
+const boardsInput = document.querySelector("#boards");
 const downloadButton = document.querySelector("#download");
 const fileName = document.querySelector("#file-name");
 const patternSize = document.querySelector("#pattern-size");
@@ -63,7 +63,7 @@ upload.addEventListener("change", () => {
   nextImage.src = nextObjectUrl;
 });
 
-columnsInput.addEventListener("input", renderPattern);
+boardsInput.addEventListener("input", renderPattern);
 downloadButton.addEventListener("click", () => {
   const svg = new XMLSerializer().serializeToString(pattern);
   const objectUrl = URL.createObjectURL(new Blob([svg], { type: "image/svg+xml;charset=utf-8" }));
@@ -106,21 +106,29 @@ function renderPattern() {
     return;
   }
 
-  const columns = Math.max(8, Math.min(100, Number.parseInt(columnsInput.value, 10) || 30));
-  columnsInput.value = columns;
-  const rows = Math.max(1, Math.min(200, Math.round(columns * image.naturalHeight / image.naturalWidth)));
-  const scale = Math.min(1, 1600 / Math.max(image.naturalWidth, image.naturalHeight));
-  const sourceWidth = Math.max(1, Math.round(image.naturalWidth * scale));
-  const sourceHeight = Math.max(1, Math.round(image.naturalHeight * scale));
+  const boardsPerSide = Math.max(1, Math.min(4, Number.parseInt(boardsInput.value, 10) || 1));
+  boardsInput.value = boardsPerSide;
+  const columns = boardsPerSide * 29;
+  const rows = columns;
+  const sourceSize = Math.min(1600, Math.max(image.naturalWidth, image.naturalHeight));
   const source = document.createElement("canvas");
-  source.width = sourceWidth;
-  source.height = sourceHeight;
+  source.width = sourceSize;
+  source.height = sourceSize;
   const sourceContext = source.getContext("2d", { willReadFrequently: true });
   sourceContext.fillStyle = "#ffffff";
-  sourceContext.fillRect(0, 0, sourceWidth, sourceHeight);
-  sourceContext.drawImage(image, 0, 0, sourceWidth, sourceHeight);
+  sourceContext.fillRect(0, 0, sourceSize, sourceSize);
+  const scale = Math.min(sourceSize / image.naturalWidth, sourceSize / image.naturalHeight);
+  const imageWidth = image.naturalWidth * scale;
+  const imageHeight = image.naturalHeight * scale;
+  sourceContext.drawImage(
+    image,
+    (sourceSize - imageWidth) / 2,
+    (sourceSize - imageHeight) / 2,
+    imageWidth,
+    imageHeight,
+  );
 
-  const pixels = sourceContext.getImageData(0, 0, sourceWidth, sourceHeight).data;
+  const pixels = sourceContext.getImageData(0, 0, sourceSize, sourceSize).data;
   const availableColors = new Uint8Array(selectedColors.flatMap((index) => palette[index]));
   const output = bead_pattern(pixels, sourceWidth, sourceHeight, columns, rows, availableColors);
   renderBeadSvg(pattern, output, columns, rows, document);
@@ -132,7 +140,7 @@ function renderPattern() {
   setPatternVisibility(pattern, true);
   emptyPattern.hidden = true;
   downloadButton.disabled = false;
-  patternSize.textContent = `${columns} × ${rows}`;
+  patternSize.textContent = `${boardsPerSide} × ${boardsPerSide} boards · ${columns} × ${rows} beads`;
   beadCount.textContent = `${columns * rows} beads`;
   colorCount.textContent = `${colors.size} ${colors.size === 1 ? "color" : "colors"}`;
 }

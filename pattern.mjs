@@ -9,6 +9,8 @@ export function renderBeadSvg(pattern, output, columns, rows, document) {
   const padding = 5;
   const width = columns * beadSize + padding * 2;
   const height = rows * beadSize + padding * 2;
+  const boardsAcross = Math.ceil(columns / 29);
+  const boardsDown = Math.ceil(rows / 29);
   pattern.setAttribute("xmlns", SVG_NAMESPACE);
   pattern.setAttribute("width", width);
   pattern.setAttribute("height", height);
@@ -24,6 +26,20 @@ export function renderBeadSvg(pattern, output, columns, rows, document) {
       appendCircle(document, shapes, x + beadSize / 2, y + beadSize / 2, beadSize * 0.44, fill);
       appendCircle(document, shapes, x + beadSize / 2, y + beadSize / 2, beadSize * 0.13, "#41352d", ".3");
       appendCircle(document, shapes, x + beadSize * 0.43, y + beadSize * 0.41, beadSize * 0.055, "#fff", ".7");
+    }
+  }
+  for (let row = 0; row < boardsDown; row++) {
+    for (let column = 0; column < boardsAcross; column++) {
+      const board = document.createElementNS(SVG_NAMESPACE, "rect");
+      board.setAttribute("x", padding + column * 29 * beadSize);
+      board.setAttribute("y", padding + row * 29 * beadSize);
+      board.setAttribute("width", Math.min(29, columns - column * 29) * beadSize);
+      board.setAttribute("height", Math.min(29, rows - row * 29) * beadSize);
+      board.setAttribute("fill", "none");
+      board.setAttribute("stroke", "#41352d");
+      board.setAttribute("stroke-opacity", ".35");
+      board.setAttribute("stroke-width", "1.5");
+      shapes.append(board);
     }
   }
   pattern.replaceChildren(shapes);
