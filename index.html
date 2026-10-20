@@ -34,8 +34,11 @@
           <div class="setting">
             <label for="boards">Bead boards per side</label>
             <div class="number-setting">
-              <input id="boards" type="number" min="1" max="4" value="1">
-              <span>boards</span>
+              <div class="board-stepper">
+                <button id="boards-decrement" type="button" aria-label="Decrease boards per side" disabled>−</button>
+                <input id="boards" type="number" min="1" max="4" value="1">
+                <button id="boards-increment" type="button" aria-label="Increase boards per side">+</button>
+              </div>
             </div>
           </div>
           <p class="setting-note">Each square board holds 29 × 29 beads.</p>

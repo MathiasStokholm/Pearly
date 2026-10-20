@@ -23,7 +23,7 @@ export function renderBeadSvg(pattern, output, columns, rows, document) {
       const x = padding + column * beadSize;
       const y = padding + row * beadSize;
       const fill = colorToHex(output[pixel], output[pixel + 1], output[pixel + 2]);
-      appendCircle(document, shapes, x + beadSize / 2, y + beadSize / 2, beadSize * 0.44, fill);
+      appendCircle(document, shapes, x + beadSize / 2, y + beadSize / 2, beadSize * 0.48, fill);
       appendCircle(document, shapes, x + beadSize / 2, y + beadSize / 2, beadSize * 0.13, "#41352d", ".3");
       appendCircle(document, shapes, x + beadSize * 0.43, y + beadSize * 0.41, beadSize * 0.055, "#fff", ".7");
     }

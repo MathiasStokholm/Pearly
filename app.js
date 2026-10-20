@@ -8,6 +8,8 @@ const emptyOriginal = document.querySelector("#empty-original");
 const emptyPattern = document.querySelector("#empty-pattern");
 const pattern = document.querySelector("#pattern");
 const boardsInput = document.querySelector("#boards");
+const boardsDecrementButton = document.querySelector("#boards-decrement");
+const boardsIncrementButton = document.querySelector("#boards-increment");
 const downloadButton = document.querySelector("#download");
 const fileName = document.querySelector("#file-name");
 const patternSize = document.querySelector("#pattern-size");
@@ -63,7 +65,13 @@ upload.addEventListener("change", () => {
   nextImage.src = nextObjectUrl;
 });
 
-boardsInput.addEventListener("input", renderPattern);
+boardsInput.addEventListener("input", () => {
+  normalizeBoardCount();
+  renderPattern();
+});
+boardsDecrementButton.addEventListener("click", () => adjustBoardCount(-1));
+boardsIncrementButton.addEventListener("click", () => adjustBoardCount(1));
+normalizeBoardCount();
 downloadButton.addEventListener("click", () => {
   const svg = new XMLSerializer().serializeToString(pattern);
   const objectUrl = URL.createObjectURL(new Blob([svg], { type: "image/svg+xml;charset=utf-8" }));
@@ -106,8 +114,7 @@ function renderPattern() {
     return;
   }
 
-  const boardsPerSide = Math.max(1, Math.min(4, Number.parseInt(boardsInput.value, 10) || 1));
-  boardsInput.value = boardsPerSide;
+  const boardsPerSide = normalizeBoardCount();
   const columns = boardsPerSide * 29;
   const rows = columns;
   const sourceSize = Math.min(1600, Math.max(image.naturalWidth, image.naturalHeight));
@@ -143,6 +150,20 @@ function renderPattern() {
   patternSize.textContent = `${boardsPerSide} × ${boardsPerSide} boards · ${columns} × ${rows} beads`;
   beadCount.textContent = `${columns * rows} beads`;
   colorCount.textContent = `${colors.size} ${colors.size === 1 ? "color" : "colors"}`;
+}
+
+function adjustBoardCount(change) {
+  boardsInput.value = normalizeBoardCount() + change;
+  normalizeBoardCount();
+  renderPattern();
+}
+
+function normalizeBoardCount() {
+  const boardsPerSide = Math.max(1, Math.min(4, Number.parseInt(boardsInput.value, 10) || 1));
+  boardsInput.value = boardsPerSide;
+  boardsDecrementButton.disabled = boardsPerSide === 1;
+  boardsIncrementButton.disabled = boardsPerSide === 4;
+  return boardsPerSide;
 }
 
 function createColorOptions() {
