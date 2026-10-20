@@ -1,4 +1,4 @@
-import init, { bead_palette, bead_pattern } from "./pkg/pearly.js";
+import init, { bead_palette, bead_palette_codes, bead_pattern } from "./pkg/pearly.js";
 import { renderBeadSvg, setPatternVisibility } from "./pattern.mjs";
 
 const upload = document.querySelector("#image-input");
@@ -25,12 +25,14 @@ let image = null;
 let objectUrl = null;
 let wasmReady = false;
 let palette = [];
+let paletteCodes = [];
 
 await init();
 palette = Array.from(bead_palette()).reduce((colors, value, index, values) => {
   if (index % 3 === 0) colors.push(values.slice(index, index + 3));
   return colors;
 }, []);
+paletteCodes = Array.from(bead_palette_codes(), (code) => `H${String(code).padStart(2, "0")}`);
 createColorOptions();
 wasmReady = true;
 
@@ -169,13 +171,14 @@ function normalizeBoardCount() {
 function createColorOptions() {
   palette.forEach((color, index) => {
     const hex = colorToHex(...color);
+    const colorCode = paletteCodes[index];
     const label = document.createElement("label");
     label.className = "color-option";
     const checkbox = document.createElement("input");
     checkbox.type = "checkbox";
     checkbox.value = index;
     checkbox.checked = true;
-    checkbox.setAttribute("aria-label", `Use color ${hex}`);
+    checkbox.setAttribute("aria-label", `Use ${colorCode} color ${hex}`);
     checkbox.addEventListener("change", () => {
       updateColorSummary();
       renderPattern();
@@ -184,7 +187,7 @@ function createColorOptions() {
     swatch.className = "color-swatch";
     swatch.style.backgroundColor = hex;
     const code = document.createElement("span");
-    code.textContent = hex;
+    code.textContent = paletteCodes[index];
     label.append(checkbox, swatch, code);
     colorOptions.append(label);
   });
