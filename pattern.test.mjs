@@ -60,7 +60,7 @@ test("renders an SVG image containing three circles for each bead", () => {
     circle.namespace === SVG_NAMESPACE && circle.name === "circle"
   )));
   assert.deepEqual(
-    pattern.children.filter((circle) => circle.attributes.get("r") === "7.92")
+    pattern.children.filter((circle) => circle.attributes.get("r") === "8.64")
       .map((circle) => circle.attributes.get("fill")),
     ["#ff0000", "#00ff00"],
   );

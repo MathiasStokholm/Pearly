@@ -38,8 +38,13 @@ body { margin: 0; min-width: 320px; }
 
 .setting { display: flex; justify-content: space-between; align-items: center; }
 .setting > label { font-size: 12px; font-weight: 700; }
-.number-setting { display: flex; align-items: center; gap: 6px; color: #78827c; font-size: 11px; }
-.number-setting input { width: 60px; border: 1px solid #e1e6df; border-radius: 7px; padding: 7px; color: #303a37; font: inherit; font-size: 12px; text-align: center; }
+.number-setting { display: flex; align-items: center; color: #78827c; font-size: 11px; }
+.board-stepper { display: flex; align-items: center; gap: 3px; }
+.board-stepper button { width: 25px; height: 30px; padding: 0; border: 1px solid #e1e6df; border-radius: 7px; background: #fff; color: #303a37; font: 700 14px "Trebuchet MS", "Segoe UI", sans-serif; cursor: pointer; }
+.board-stepper button:hover:not(:disabled) { border-color: #77aaa1; background: #f4f9f6; }
+.board-stepper button:disabled { color: #aeb7b1; cursor: not-allowed; }
+.board-stepper button:focus-visible { outline: 2px solid #91c3ba; outline-offset: 1px; }
+.number-setting input { width: 38px; border: 1px solid #e1e6df; border-radius: 7px; padding: 7px 2px; color: #303a37; font: inherit; font-size: 12px; text-align: center; }
 .number-setting input:focus { outline: 2px solid #91c3ba; outline-offset: 1px; }
 .setting-note { margin: 8px 0 18px; color: #87918b; font-size: 10px; }
 
