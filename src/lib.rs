@@ -178,12 +178,12 @@ fn srgb_to_oklab(color: [u8; 3]) -> [f64; 3] {
     let green = srgb_to_linear(f64::from(color[1]) / 255.0);
     let blue = srgb_to_linear(f64::from(color[2]) / 255.0);
 
-    let lightness = (0.412_221_470_8 * red + 0.536_332_536_3 * green + 0.051_445_992_9 * blue)
-        .cbrt();
-    let green_blue = (0.211_903_498_2 * red + 0.680_699_545_1 * green + 0.107_396_956_6 * blue)
-        .cbrt();
-    let blue_red = (0.088_302_461_9 * red + 0.281_718_837_6 * green + 0.629_978_700_5 * blue)
-        .cbrt();
+    let lightness =
+        (0.412_221_470_8 * red + 0.536_332_536_3 * green + 0.051_445_992_9 * blue).cbrt();
+    let green_blue =
+        (0.211_903_498_2 * red + 0.680_699_545_1 * green + 0.107_396_956_6 * blue).cbrt();
+    let blue_red =
+        (0.088_302_461_9 * red + 0.281_718_837_6 * green + 0.629_978_700_5 * blue).cbrt();
 
     [
         0.210_454_255_3 * lightness + 0.793_617_785 * green_blue - 0.004_072_046_8 * blue_red,
@@ -218,15 +218,8 @@ mod tests {
     #[test]
     fn samples_source_pixels_in_linear_light() {
         let source = [255, 255, 255, 255, 25, 25, 25, 255];
-        let result = bead_pattern_pixels(
-            &source,
-            2,
-            1,
-            1,
-            1,
-            &[188, 188, 188, 120, 120, 120],
-        )
-        .unwrap();
+        let result =
+            bead_pattern_pixels(&source, 2, 1, 1, 1, &[188, 188, 188, 120, 120, 120]).unwrap();
         assert_eq!(result, [188, 188, 188, 255]);
     }
 
