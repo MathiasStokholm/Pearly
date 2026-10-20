@@ -101,7 +101,7 @@ fn bead_pattern_pixels(
                 columns,
                 rows,
             );
-            let color = nearest_color([red, green, blue], &palette);
+            let color = nearest_color(boost_saturation([red, green, blue]), &palette);
             pattern.extend_from_slice(&[color[0], color[1], color[2], 255]);
         }
     }
@@ -156,6 +156,21 @@ fn nearest_color(color: [u8; 3], palette: &[[u8; 3]]) -> [u8; 3] {
         .unwrap()
 }
 
+fn boost_saturation(color: [u8; 3]) -> [u8; 3] {
+    let maximum = u16::from(*color.iter().max().unwrap());
+    let minimum = u16::from(*color.iter().min().unwrap());
+    let chroma = maximum - minimum;
+    if chroma == 0 {
+        return color;
+    }
+
+    let boosted_chroma = ((chroma * 6 + 2) / 5).min(maximum);
+    color.map(|channel| {
+        let distance_from_maximum = maximum - u16::from(channel);
+        (maximum - (distance_from_maximum * boosted_chroma + chroma / 2) / chroma) as u8
+    })
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -189,5 +204,12 @@ mod tests {
         assert_eq!(result, [25, 25, 25, 255]);
         assert!(bead_pattern_pixels(&[0, 0, 0, 255], 1, 1, 1, 1, &[]).is_err());
         assert!(bead_pattern_pixels(&[0, 0, 0, 255], 1, 1, 1, 1, &[1, 2]).is_err());
+    }
+
+    #[test]
+    fn boosts_saturation_without_changing_grayscale() {
+        assert_eq!(boost_saturation([200, 100, 100]), [200, 80, 80]);
+        assert_eq!(boost_saturation([96, 96, 96]), [96, 96, 96]);
+        assert_eq!(boost_saturation([0, 0, 0]), [0, 0, 0]);
     }
 }
