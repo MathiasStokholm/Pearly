@@ -1,5 +1,7 @@
 # Pearly ✳
 
+**[Try Pearly in your browser →](https://mathiasstokholm.github.io/Pearly)**
+
 **Picture it in beads.** Pearly turns a favorite picture into a colorful Hama Midi bead pattern, ready to make.
 
 ![Example conversion from a landscape picture to a bead pattern](examples/pearly-example.png)
